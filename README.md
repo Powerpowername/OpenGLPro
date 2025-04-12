@@ -2,13 +2,21 @@
  learnOpenGL网站项目
 
  unite1  创建glfw窗口
+ 
  unite2  理解VAO，VBO，EBO
+ 
  unite3  使用uniform 从CPU传数据至GPU实现图像实时变色
+ 
  unite4  使用stb_image加载图像纹理，并使用纹理给图像上色
+ 
  unite5  封装着色器程序类Shader,学习纹理环绕方式、纹理过滤、多级渐近纹理
+ 
  unite6  建立摄像机类Camera
+ 
 
 
  unite9  建立普通光照，一个固定位置的点光源，和一个通过材质纹理建立的物体
+ 
  unite10 平行光照射的情况
+ 
  
