@@ -2,7 +2,6 @@
  learnOpenGL网站项目
 
  unite1  创建glfw窗口
- 
  unite2  理解VAO，VBO，EBO
  
  unite3  使用uniform 从CPU传数据至GPU实现图像实时变色
