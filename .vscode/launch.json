@@ -8,7 +8,7 @@
             "name": "(gdb) Windows 上的 Bash 启动",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/unite12/build/bin/app.exe",
+            "program": "${workspaceFolder}/unite13/build/bin/app.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
