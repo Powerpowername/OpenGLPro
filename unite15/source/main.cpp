@@ -1,3 +1,4 @@
+
 #include <winInit.hpp>
 #include <string>
 #include <cmath>
@@ -6,6 +7,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <vector>
+#include <map>
 // #include <fstream>
 using std::string;
 // settings
@@ -44,7 +47,7 @@ int main()
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;  
     }
-    Shader shader("../shaderSource/depthTest.vs","../shaderSource/depthTest.fs");
+    Shader shader("../shaderSource/blending.vs","../shaderSource/blending.fs");
 
 #pragma region 顶点数据
     // set up vertex data (and buffer(s)) and configure vertex attributes
@@ -103,6 +106,17 @@ int main()
         -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
          5.0f, -0.5f, -5.0f,  2.0f, 2.0f								
     };
+    //只是一个矩形面
+    float transparentVertices[] = {
+        // positions         // texture Coords (swapped y coordinates because texture is flipped upside down)
+        0.0f, 0.5f, 0.0f, 0.0f, 0.0f,
+        0.0f, -0.5f, 0.0f, 0.0f, 1.0f,
+        1.0f, -0.5f, 0.0f, 1.0f, 1.0f,
+
+        0.0f, 0.5f, 0.0f, 0.0f, 0.0f,
+        1.0f, -0.5f, 0.0f, 1.0f, 1.0f,
+        1.0f, 0.5f, 0.0f, 1.0f, 0.0f
+    };
 #pragma endregion
     // first, configure the cube's VAO (and VBO)
     unsigned int cubeVAO, cubeVBO;
@@ -129,12 +143,40 @@ int main()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glBindVertexArray(0);
 
+    // transparent VAO
+    unsigned int transparentVAO, transparentVBO;
+    glGenVertexArrays(1, &transparentVAO);
+    glGenBuffers(1, &transparentVBO);
+    glBindVertexArray(transparentVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, transparentVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(transparentVertices), transparentVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glBindVertexArray(0);
+
     unsigned int cubeTexture = loadTexture("../../resource/marble.jpg",true);
     unsigned int floorTexture = loadTexture("../../resource/metal.png",true);
+    unsigned int transparentTexture = loadTexture("../../resource/window.png",false);
+
+    //grass location
+    //理论上任然有缺陷，后面的物体必需先画，前面的物体才会有一个正常的混合色
+    std::vector<glm::vec3> windows 
+    {
+        glm::vec3(-1.5f, 0.0f, -0.48f),
+        glm::vec3( 1.5f, 0.0f, 0.51f),
+        glm::vec3( 0.0f, 0.0f, 0.7f),
+        glm::vec3(-0.3f, 0.0f, -2.3f),
+        glm::vec3 (0.5f, 0.0f, -0.6f)
+    };
+
     shader.use();
     shader.setInt("texture1",0);
 
     glEnable(GL_DEPTH_TEST);//开启深度测试
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
     while (!glfwWindowShouldClose(window.get()))
     {
         //calculate current time
@@ -143,6 +185,7 @@ int main()
         lastFrame = currentFrame;
 
         processInput(window.get());
+
         glClearColor(0,0,0,1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         //bind Texture in texture target 
@@ -171,6 +214,24 @@ int main()
         glBindTexture(GL_TEXTURE_2D, floorTexture);//将地板纹理绑定上纹理单元0，为画地板使用
         shader.setMat4("model", glm::mat4(1.0f));
         glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        glBindVertexArray(transparentVAO);
+        glBindTexture(GL_TEXTURE_2D,transparentTexture);
+        //很精彩 通过map存值是有序的来自动排序
+        std::map<float, glm::vec3> sorted;
+        for (unsigned int i = 0; i < windows.size(); i++)
+        {
+            float distance = glm::length(camera.Position - windows[i]);
+            sorted[distance] = windows[i];
+        }
+        //deepseek  yyds model举证在没有显式声明为model = glm::mat4(1); 只是model = glm::mat4();的话会定义为全0矩阵 
+        for (std::map<float, glm::vec3>::reverse_iterator it = sorted.rbegin(); it != sorted.rend(); ++it)
+        {
+            model = glm::mat4(1);            model = glm::translate(model, it->second);
+            shader.setMat4("model", model);
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+        }
+
         glBindVertexArray(0);
         glfwSwapBuffers(window.get());
         glfwPollEvents();
@@ -179,6 +240,9 @@ int main()
     glDeleteVertexArrays(1, &planeVAO);
     glDeleteBuffers(1,&cubeVBO);
     glDeleteBuffers(1,&planeVBO);
+    glDeleteBuffers(1,&transparentVAO);
+    glDeleteBuffers(1,&transparentVBO);
+
 
     glfwTerminate();
     return 0;
