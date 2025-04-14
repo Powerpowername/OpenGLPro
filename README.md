@@ -27,3 +27,7 @@
  unite12 多光源照射情况
 
  unite13 深度测试
+
+ unite14 模板测试
+
+ unite15 颜色混合
