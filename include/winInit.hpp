@@ -15,13 +15,13 @@ extern float deltaTime;
 /// @param glfwVerMajor 
 /// @param glfwVerMinor 
 /// @return 
-GLFWwindow* windowInit(int glfwVerMajor,int glfwVerMinor,int width,int height)
+GLFWwindow* windowInit(int glfwVerMajor,int glfwVerMinor,int width,int height,int multiSample = 1)
 {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,glfwVerMajor);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,glfwVerMinor);
     glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_CORE_PROFILE);
-
+    glfwWindowHint(GLFW_SAMPLES, multiSample);
     GLFWwindow* window = glfwCreateWindow(width,height,"window",NULL,NULL);//此处为堆区分配的内存
 //    // 添加以下两行
 // std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
