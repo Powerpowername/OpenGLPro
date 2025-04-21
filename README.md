@@ -42,3 +42,5 @@ s
  unite21 实例化学习，将位置数据通过定点属性传入到GPU，避免以前画一个传一个的操作（多次从CPU传到GPU）
 
  unite22 离屏多重采样抗锯齿
+
+ unite23 Bling——Phong式光照模型gamma校正
