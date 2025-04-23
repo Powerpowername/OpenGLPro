@@ -40,10 +40,11 @@ private:
 public:
     unsigned int ID;//shader ID
 
-    Shader(const std::string vertexFilePath,const std::string fragmentFilePath)
+    Shader(const std::string vertexFilePath,const std::string fragmentFilePath,const char* geometryPath = nullptr)
     {
         std::string ver = readFile(vertexFilePath);
         std::string frag = readFile(fragmentFilePath);
+
         const char* vertexShderSource = ver.c_str();
         const char* fragmentShaderSource = frag.c_str();
         // std::cout<<"vertexShderSource :"<< vertexShderSource <<std::endl;
@@ -56,16 +57,30 @@ public:
         glShaderSource(fragmentShader,1,&fragmentShaderSource,NULL);
         glCompileShader(fragmentShader);
         checkCompileErrors(fragmentShader,"FRAGMENT");
+        //集合着色器
+        unsigned int geometryShader;
+        std::string geo;
+        const char* geometrySource;
+        if (geometryPath != nullptr)
+        {
+            geo = readFile(geometryPath);
+            geometrySource = geo.c_str();
+            geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
+            glShaderSource(geometryShader,1,&geometrySource,NULL);
+            glCompileShader(geometryShader);
+            checkCompileErrors(geometryShader,"GEOMETRY");
+        }
 
         ID = glCreateProgram();
         glAttachShader(ID,vertexShader);
         glAttachShader(ID,fragmentShader);
+        if(geometryPath != nullptr)
+            glAttachShader(ID,geometryShader);
         glLinkProgram(ID);
         checkCompileErrors(ID,"PROGRAM");
-
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);        
-        
+        glDeleteShader(geometryShader);       
     }
     ~Shader()
     {
