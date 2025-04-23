@@ -28,7 +28,7 @@
  unite13 深度测试
 
  unite14 模板测试
-s
+
  unite15 颜色混合
 
  unite16 面剔除
@@ -37,7 +37,9 @@ s
 
  unite18 天空盒子，将摄像头的摆动引起的镜面反射的变化引入
 
- unite19 
+ unite19 uniform块布局
+
+ unite20 几何着色器
 
  unite21 实例化学习，将位置数据通过定点属性传入到GPU，避免以前画一个传一个的操作（多次从CPU传到GPU）
 
