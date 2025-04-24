@@ -6,7 +6,9 @@
                 "${workspaceFolder}/**",
                 "E:/lib_c/glad/include",
                 "E:\\lib_c\\glfw-3.4\\include",
-                "E:/OpenGLPro/include"
+                "E:/OpenGLPro/include",
+                "E:/lib_c/assimp-master/include",
+                "E:\\lib_c\\assimp-master\\build_mingw64\\include"
             ],
             "defines": [
                 "_DEBUG",
