@@ -50,6 +50,9 @@
  unite24 平行光阴影
 
  unite25 利用Assimp导入模型，使用GCC编译器，在cmake构建工程时要注意libassimp-5.dll的查找，只找libassimp.dll.a是不够的，libassimp.dll.a文件只是在链接阶段的时候告诉程序该链接什么函数，但是程序执行的时候如果没有libassimp-5.dll是不可以运行的，也就是说，链接的其实是动态库，最简单的解决办法是把libassimp-5.dll放在，执行文件的目录下，或者使用cmake的add_custom_command（学习）
+ 
  unite26 法线贴图
+ 
  unite27 陡峭视差贴图
+ 
  unite28 泛光
